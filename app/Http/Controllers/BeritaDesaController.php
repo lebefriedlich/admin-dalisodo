@@ -82,14 +82,14 @@ class BeritaDesaController extends Controller
             $fileName = Carbon::now()->format('d_m_Y') . ' - ' . $uniqueId . ' - Dalisodo - ' . $originalFileName;
 
             try {
-                $folder = 'Web Profil Desa/Berita';
-                $filePath = $file->storeAs($folder, $fileName, 'google');
-                $fileId = 'Web Profil Desa/Berita/' . basename($filePath);
+                $folder = 'images/berita';
+                $filePath = $file->storeAs($folder, $fileName, 'public');
+                $fileUrl = asset('storage/' . $filePath);
 
                 MediaModel::create([
                     'id_berita' => $berita->id_berita,
                     'tipe_media' => $request->tipe_media,
-                    'file_id' => $fileId,
+                    'file_id' => $fileUrl,
                 ]);
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
@@ -154,7 +154,11 @@ class BeritaDesaController extends Controller
 
         if ($request->media_image) {
             if ($media->file_id) {
-                Storage::disk('google')->delete($media->file_id);
+                $filePath = str_replace(asset('storage/'), '', $media->file_id);
+
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
             }
 
             $file = $request->file('media_image');
@@ -163,13 +167,13 @@ class BeritaDesaController extends Controller
             $fileName = Carbon::now()->format('d_m_Y') . ' - ' . $uniqueId . ' - Dalisodo - ' . $originalFileName;
 
             try {
-                $folder = 'Web Profil Desa/Berita';
-                $filePath = $file->storeAs($folder, $fileName, 'google');
-                $fileId = 'Web Profil Desa/Berita/' . basename($filePath);
+                $folder = 'images/berita';
+                $filePath = $file->storeAs($folder, $fileName, 'public');
+                $fileUrl = asset('storage/' . $filePath);
 
                 $media->update([
                     'tipe_media' => $request->tipe_media,
-                    'file_id' => $fileId,
+                    'file_id' => $fileUrl,
                     'youtube_id' => null,
                 ]);
             } catch (\Exception $e) {
@@ -177,7 +181,11 @@ class BeritaDesaController extends Controller
             }
         } else if ($request->url_media && $request->tipe_media == 'Youtube') {
             if ($media->file_id) {
-                Storage::disk('google')->delete($media->file_id);
+                $filePath = str_replace(asset('storage/'), '', $media->file_id);
+
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
             }
 
             $youtubeId = $this->getYouTubeId($request->url_media);
@@ -189,36 +197,43 @@ class BeritaDesaController extends Controller
             ]);
         }
 
-        return redirect()->route('list-berita-desa')->with('success', 'Berhasil memperbarui potensi desa');
+        return redirect()->route('list-berita-desa')->with('success', 'Berhasil memperbarui berita desa');
     }
 
     public function destroy(string $uuid)
     {
-        $potensi = BeritaModel::find($uuid);
+        $berita = BeritaModel::find($uuid);
+
         $media = MediaModel::where('id_berita', $uuid)->first();
 
         if ($media) {
             if ($media->file_id) {
-                Storage::disk('google')->delete($media->file_id);
+                $filePath = str_replace(asset('storage/'), '', $media->file_id);
+
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
             }
 
             $media->delete();
         }
 
-        $potensi->delete();
+        $berita->delete();
 
         return redirect()->back()->with('success', 'Data berhasil dihapus');
     }
+
 
     public function preview(string $uuid)
     {
         $item = BeritaModel::with('media')->find($uuid);
         $item->type = 'berita';
-        
+
         return view('detail', compact('item'));
     }
 
-    function getYouTubeId($url) {
+    function getYouTubeId($url)
+    {
         $pattern = '/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/';
         if (preg_match($pattern, $url, $matches)) {
             return $matches[1]; // Mengembalikan video ID

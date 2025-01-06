@@ -119,13 +119,7 @@
                     <article>
                         <div class="news-header">
                             @if ($item->media->tipe_media == 'Gambar')
-                                @php
-                                    $gambar = Yaza\LaravelGoogleDriveStorage\Gdrive::get($item->media->file_id);
-                                    $base64Gambar = base64_encode($gambar->file);
-                                @endphp
-
-                                <img src="data:image/jpeg;base64,{{ $base64Gambar }}" class="news-image"
-                                    alt="{{ $item->judul }}">
+                                <img src="{{ $item->media->file_id }}" class="news-image" alt="Gambar Potensi">
                             @elseif($item->media->tipe_media == 'Youtube')
                                 <a href="https://www.youtube.com/watch?v={{ $item->media->youtube_id }}" target="_blank">
                                     <img src="https://img.youtube.com/vi/{{ $item->media->youtube_id }}/hqdefault.jpg"
@@ -151,7 +145,7 @@
                         </div>
 
                         <a href="{{ url()->previous() }}" class="btn back-button">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Articles
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
                         </a>
                     </article>
                 </div>

@@ -81,14 +81,8 @@
 
                                 <div class="form-group" id="media_input_container">
                                     @if ($berita->media->tipe_media == 'Gambar')
-                                        @php
-                                            $gambar = Yaza\LaravelGoogleDriveStorage\Gdrive::get(
-                                                $berita->media->file_id,
-                                            );
-                                            $base64Gambar = base64_encode($gambar->file);
-                                        @endphp
-                                        <img src="data:image/jpeg;base64,{{ $base64Gambar }}"
-                                            style="width: 400px; height: 240px; margin-bottom: 15px;" alt="Gambar Potensi">
+                                        <img src="{{ $berita->media->file_id }}" style="width: 320px; height: 240px"
+                                            alt="{{ $berita->judul }}">
                                         <input type="file" class="form-control" id="media_image" name="media_image">
                                     @elseif ($berita->media->tipe_media == 'Youtube')
                                         <a href="https://www.youtube.com/watch?v={{ $berita->media->youtube_id }}"

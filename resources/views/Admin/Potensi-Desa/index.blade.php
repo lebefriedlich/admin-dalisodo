@@ -89,15 +89,8 @@
                                                 <td class="text-center text-dark">{{ $data->kategori }}</td>
                                                 <td class="text-center text-dark">
                                                     @if ($data->media->tipe_media == 'Gambar')
-                                                        @php
-                                                            $gambar = Yaza\LaravelGoogleDriveStorage\Gdrive::get(
-                                                                $data->media->file_id,
-                                                            );
-                                                            $base64Gambar = base64_encode($gambar->file);
-                                                        @endphp
-
-                                                        <img src="data:image/jpeg;base64,{{ $base64Gambar }}"
-                                                            style="width: 320px; height: 240px" alt="Gambar Potensi">
+                                                        <img src="{{ $data->media->file_id }}" style="width: 320px; height: 240px"
+                                                        alt="{{ $data->judul }}">
                                                     @elseif($data->media->tipe_media == 'Youtube')
                                                         <a href="https://www.youtube.com/watch?v={{ $data->media->youtube_id }}"
                                                             target="_blank">

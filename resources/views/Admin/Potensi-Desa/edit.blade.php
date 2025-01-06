@@ -85,14 +85,8 @@
 
                                 <div class="form-group" id="media_input_container">
                                     @if ($potensi->media->tipe_media == 'Gambar')
-                                        @php
-                                            $gambar = Yaza\LaravelGoogleDriveStorage\Gdrive::get(
-                                                $potensi->media->file_id,
-                                            );
-                                            $base64Gambar = base64_encode($gambar->file);
-                                        @endphp
-                                        <img src="data:image/jpeg;base64,{{ $base64Gambar }}"
-                                            style="width: 400px; height: 240px; margin-bottom: 15px;" alt="Gambar Potensi">
+                                        <img src="{{ $potensi->media->file_id }}" style="width: 320px; height: 240px"
+                                            alt="{{ $potensi->judul }}">
                                         <input type="file" class="form-control" id="media_image" name="media_image">
                                     @elseif ($potensi->media->tipe_media == 'Youtube')
                                         <a href="https://www.youtube.com/watch?v={{ $potensi->media->youtube_id }}"
@@ -103,7 +97,8 @@
                                         </a>
                                         <br>
                                         <input type="url" class="form-control" id="url_media" name="url_media"
-                                            placeholder="Masukkan URL Youtube" value="https://www.youtube.com/watch?v={{ $potensi->media->youtube_id }}">
+                                            placeholder="Masukkan URL Youtube"
+                                            value="https://www.youtube.com/watch?v={{ $potensi->media->youtube_id }}">
                                     @endif
                                 </div>
 
